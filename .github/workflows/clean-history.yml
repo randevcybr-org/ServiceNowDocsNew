@@ -1,0 +1,35 @@
+name: Clean Git History
+on:
+  workflow_dispatch: # מאפשר לך להריץ את זה ידנית בלחיצת כפתור
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: australia  # רץ על הבראנץ' של אוסטרליה
+          fetch-depth: 0  # מושך את כל ההיסטוריה כדי שנוכל למחוק אותה
+
+      - name: Squash and Force Push
+        run: |
+          # הגדרת יוזר זמני לפעולה
+          git config --global user.name "randevcybr"
+          git config --global user.email "randevcybr@users.noreply.github.com"
+          
+          # יצירת ענף חדש ו"יתום" (בלי שום היסטוריה, רק הקבצים הנוכחיים)
+          git checkout --orphan temp-branch
+          
+          # הוספת כל הקבצים וביצוע קומיט יחיד ונקי
+          git add -A
+          git commit -m "Clean documentation import"
+          
+          # מחיקת הענף הישן והחלפתו בחדש הנקי
+          git branch -D australia
+          git branch -m australia
+          
+          # דחיפה בכוח חזרה לגיטהאב (דורס את ההיסטוריה הישנה)
+          git push origin australia --force

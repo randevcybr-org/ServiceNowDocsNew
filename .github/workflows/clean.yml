@@ -1,0 +1,21 @@
+name: Flatten History
+on: workflow_dispatch
+jobs:
+  flatten:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: australia
+      - name: Clean and Force Push
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git checkout --orphan temp
+          git add -A
+          git commit -m "Clean commit without history"
+          git branch -D australia
+          git branch -m australia
+          git push origin australia --force
